@@ -3,6 +3,7 @@ const fs = require('fs');
 const path = require('path');
 
 const app = express();
+app.use(express.static('public'));
 const PORT = 3000;
 app.listen(PORT, '0.0.0.0', () => {
     console.log(`Server running and accessible on your network at port ${PORT}`);
